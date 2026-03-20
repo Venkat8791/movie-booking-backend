@@ -1,0 +1,105 @@
+{
+  "sections": [
+    {
+      "sectionName": "VIP",
+      "seatType": "RECLINER",
+      "basePrice": 300,
+      "rows": [
+        {
+          "label": "A",
+          "seats": [
+            { "columnNumber": 1, "isBlocked": false, "isGap": false},
+            { "columnNumber": 2, "isBlocked": false, "isGap": false},
+            { "columnNumber": 3, "isBlocked": false, "isGap": false},
+            { "columnNumber": 4, "isBlocked": false, "isGap": false},
+            { "columnNumber": 5, "isBlocked": false, "isGap": false},
+            { "columnNumber": 6, "isBlocked": false, "isGap": true},
+            { "columnNumber": 7, "isBlocked": false, "isGap": false},
+            { "columnNumber": 8, "isBlocked": false, "isGap": false},
+            { "columnNumber": 9, "isBlocked": false, "isGap": false},
+            { "columnNumber": 10, "isBlocked": false, "isGap": false},
+            { "columnNumber": 11, "isBlocked": false, "isGap": false}
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "PREMIUM",
+      "seatType": "PREMIUM",
+      "basePrice": 200,
+      "rows": [
+        {
+          "label": "B",
+          "seats": [
+            { "columnNumber": 1, "isBlocked": false, "isGap": false},
+            { "columnNumber": 2, "isBlocked": false, "isGap": false},
+            { "columnNumber": 3, "isBlocked": false, "isGap": false},
+            { "columnNumber": 4, "isBlocked": false, "isGap": false},
+            { "columnNumber": 5, "isBlocked": false, "isGap": false},
+            { "columnNumber": 6, "isBlocked": false, "isGap": true},
+            { "columnNumber": 7, "isBlocked": false, "isGap": false},
+            { "columnNumber": 8, "isBlocked": false, "isGap": false},
+            { "columnNumber": 9, "isBlocked": false, "isGap": false},
+            { "columnNumber": 10, "isBlocked": false, "isGap": false},
+            { "columnNumber": 11, "isBlocked": false, "isGap": false}
+          ]
+        },
+        {
+          "label": "C",
+          "seats": [
+            { "columnNumber": 1, "isBlocked": false, "isGap": false},
+            { "columnNumber": 2, "isBlocked": false, "isGap": false},
+            { "columnNumber": 3, "isBlocked": false, "isGap": false},
+            { "columnNumber": 4, "isBlocked": false, "isGap": false},
+            { "columnNumber": 5, "isBlocked": false, "isGap": false},
+            { "columnNumber": 6, "isBlocked": false, "isGap": true},
+            { "columnNumber": 7, "isBlocked": false, "isGap": false},
+            { "columnNumber": 8, "isBlocked": false, "isGap": false},
+            { "columnNumber": 9, "isBlocked": false, "isGap": false},
+            { "columnNumber": 10, "isBlocked": false, "isGap": false},
+            { "columnNumber": 11, "isBlocked": false, "isGap": false}
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "REGULAR",
+      "seatType": "REGULAR",
+      "basePrice": 100,
+      "rows": [
+        {
+          "label": "D",
+          "seats": [
+            { "columnNumber": 1, "isBlocked": false, "isGap": false},
+            { "columnNumber": 2, "isBlocked": false, "isGap": false},
+            { "columnNumber": 3, "isBlocked": false, "isGap": false},
+            { "columnNumber": 4, "isBlocked": false, "isGap": false},
+            { "columnNumber": 5, "isBlocked": false, "isGap": false},
+            { "columnNumber": 6, "isBlocked": false, "isGap": true},
+            { "columnNumber": 7, "isBlocked": false, "isGap": false},
+            { "columnNumber": 8, "isBlocked": false, "isGap": false},
+            { "columnNumber": 9, "isBlocked": false, "isGap": false},
+            { "columnNumber": 10, "isBlocked": false, "isGap": false},
+            { "columnNumber": 11, "isBlocked": false, "isGap": false}
+          ]
+        },
+        {
+          "label": "E",
+          "seats": [
+            { "columnNumber": 1, "isBlocked": false, "isGap": false},
+            { "columnNumber": 2, "isBlocked": false, "isGap": false},
+            { "columnNumber": 3, "isBlocked": false, "isGap": false},
+            { "columnNumber": 4, "isBlocked": false, "isGap": false},
+            { "columnNumber": 5, "isBlocked": false, "isGap": false},
+            { "columnNumber": 6, "isBlocked": false, "isGap": true},
+            { "columnNumber": 7, "isBlocked": false, "isGap": false},
+            { "columnNumber": 8, "isBlocked": false, "isGap": false},
+            { "columnNumber": 9, "isBlocked": false, "isGap": false},
+            { "columnNumber": 10, "isBlocked": false, "isGap": false},
+            { "columnNumber": 11, "isBlocked": false, "isGap": false}
+          ]
+        }
+      ]
+    }
+  ]
+}

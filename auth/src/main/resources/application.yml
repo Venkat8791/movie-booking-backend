@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: movie-booking-system
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+  liquibase:
+    enabled: true
+    changelog: classpath:db/changelog/changelog-master.yaml
+  data:
+    mongodb:
+      uri: mongodb+srv://gadiyakarivenkat:Venkat791@cluster0.maubzyy.mongodb.net/Movies?retryWrites=true&w=majority&appName=Cluster0
+      driver: cdata.jdbc.mongodb.MongoDBDriver
+      database: Movies
+  datasource:
+    url: jdbc:postgresql://localhost:5432/movie_booking
+    username: admin
+    password: venkat791
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      dialect: rg.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret:
+  expiration: 86400000

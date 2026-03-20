@@ -26,3 +26,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/ddl/009-alter-users-add-role.sql
       relativeToChangelogFile: false
+  - include:
+      file: db/changelog/changes/ddl/010-alter-seats-shows-multiplier.sql
+      relativeToChangelogFile: false
