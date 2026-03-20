@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/movies/**").hasRole("ADMIN")   // ← admin only
+                        .requestMatchers(HttpMethod.PUT,    "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/theatres/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/theatres/**").hasRole("ADMIN") // ← admin only
                         .requestMatchers(HttpMethod.GET, "/api/shows/**").permitAll()
