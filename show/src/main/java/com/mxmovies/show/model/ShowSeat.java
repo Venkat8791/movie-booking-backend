@@ -36,6 +36,7 @@ public class ShowSeat {
     @Column(name = "booking_id")
     private UUID bookingId;
 
+    @Setter                          // ← only this field needs updating
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ShowSeatStatus status;

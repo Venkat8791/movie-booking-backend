@@ -32,5 +32,7 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/ddl/011-alter-shows-drop-base-price.sql
       relativeToChangelogFile: false
-
+  - include:
+      file: db/changelog/changes/ddl/012-alter-bookings-add-expires-at.sql
+      relativeToChangelogFile: false
 

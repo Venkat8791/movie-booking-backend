@@ -6,7 +6,8 @@ import com.mxmovies.auth.dto.response.AuthResponse;
 import com.mxmovies.auth.model.Role;
 import com.mxmovies.auth.model.User;
 import com.mxmovies.auth.repository.UserRepository;
-import com.mxmovies.auth.security.JwtUtil;
+
+import com.mxmovies.common.security.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,7 +47,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getId());
 
         return AuthResponse.builder()
                 .token(token)
@@ -61,7 +62,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new RuntimeException("User not found"));
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getId());
         return AuthResponse.builder()
                 .token(token)
                 .name(user.getName())

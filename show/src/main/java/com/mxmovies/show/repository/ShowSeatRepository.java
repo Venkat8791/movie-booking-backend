@@ -2,7 +2,9 @@ package com.mxmovies.show.repository;
 
 import com.mxmovies.show.model.ShowSeat;
 import com.mxmovies.show.model.ShowSeatStatus;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,4 +25,8 @@ public interface ShowSeatRepository extends JpaRepository<ShowSeat, UUID> {
 
     // get all seats for a booking (for receipt)
     List<ShowSeat> findByBookingId(UUID bookingId);
+
+    @Modifying
+    @Transactional
+    void deleteByBookingId(UUID bookingId);
 }

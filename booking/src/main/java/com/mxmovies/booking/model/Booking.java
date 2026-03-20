@@ -35,10 +35,12 @@ public class Booking {
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
@@ -46,5 +48,8 @@ public class Booking {
     @CreationTimestamp
     @Column(name = "booked_at", updatable = false)
     private LocalDateTime bookedAt;
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 
 }
