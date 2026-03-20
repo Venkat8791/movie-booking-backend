@@ -127,7 +127,7 @@ public class ScreenService {
 
     // get layout from MongoDB for UI rendering
     public SeatLayoutDocument getSeatLayout(UUID screenId) {
-        return seatLayoutRepository.findByScreenId(screenId)
+        return seatLayoutRepository.findByScreenId(screenId.toString())
                 .orElseThrow(() -> new RuntimeException("Seat layout not found"));
     }
 

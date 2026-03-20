@@ -35,9 +35,6 @@ public class Show {
     @Column(name = "show_time", nullable = false)
     private LocalDateTime showTime;
 
-    @Column(name = "base_price", nullable = false)
-    private BigDecimal basePrice;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ShowStatus status;

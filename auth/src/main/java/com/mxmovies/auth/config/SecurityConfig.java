@@ -44,7 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/theatres/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/theatres/**").hasRole("ADMIN") // ← admin only
-                        .requestMatchers(HttpMethod.GET, "/api/shows/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,   "/api/shows/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/shows/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/shows/**").hasRole("ADMIN")    // ← admin only
                         .anyRequest().authenticated())
                 .sessionManagement(session-> session

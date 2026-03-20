@@ -18,4 +18,22 @@
         <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.mxmovies</groupId>
+            <artifactId>movie</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mxmovies</groupId>
+            <artifactId>show</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mxmovies</groupId>
+            <artifactId>theatre</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
