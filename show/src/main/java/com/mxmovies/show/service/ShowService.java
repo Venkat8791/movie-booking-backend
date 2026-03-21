@@ -1,5 +1,7 @@
 package com.mxmovies.show.service;
 
+import com.mxmovies.common.exception.ConflictException;
+import com.mxmovies.common.exception.ResourceNotFoundException;
 import com.mxmovies.movie.model.Movie;
 import com.mxmovies.movie.repository.MovieRepository;
 import com.mxmovies.show.dto.request.ShowRequest;
@@ -48,11 +50,11 @@ public class ShowService {
     public ShowResponse createShow(ShowRequest request){
         // validate movie exists
         Movie movie = movieRepository.findById(request.getMovieId())
-                .orElseThrow(()->new RuntimeException("Movie not found"));
+                .orElseThrow(()->new ResourceNotFoundException("Movie not found"));
 
         // validate screen exists
         Screen screen = screenRepository.findById(request.getScreenId())
-                .orElseThrow(() -> new RuntimeException("Screen not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
 
         // check screen is not already booked for this time slot
         LocalDateTime endTime = request.getShowTime()
@@ -65,7 +67,7 @@ public class ShowService {
         );
 
         if(!overlappingShows.isEmpty()){
-            throw new RuntimeException("Screen is already booked for this time slot");
+            throw new ConflictException("Screen is already booked for this time slot");
         }
 
         Show show = Show.builder()
@@ -82,7 +84,7 @@ public class ShowService {
     public ShowResponse getShowById(UUID id){
         return showRepository.findById(id)
                 .map(this::mapToResponse)
-                .orElseThrow(()-> new RuntimeException("Show not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Show not found"));
     }
 
     public List<ShowResponse> getShowsByMovie(UUID movieId){
@@ -102,12 +104,12 @@ public class ShowService {
     public SeatAvailabilityResponse getSeatAvailability(UUID showId){
         //get show
         Show show = showRepository.findById(showId)
-                .orElseThrow(() -> new RuntimeException("Show not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Show not found"));
 
         //get layout document from mongo
         SeatLayoutDocument layout = seatLayoutRepository
                 .findByScreenId(show.getScreenId().toString())
-                .orElseThrow(()-> new RuntimeException("Seat layout not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Seat layout not found"));
 
         //get all seats for this screen from postgres
         List<Seat> allSeats = seatRepository.findByScreenIdOrderByRowLabelAscColumnNumberAsc(show.getScreenId());
@@ -213,7 +215,7 @@ public class ShowService {
 
     public void cancelShow(UUID id){
         Show show = showRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Show not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Show not found"));
 
         show = Show.builder()
                 .id(show.getId())

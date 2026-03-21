@@ -1,5 +1,6 @@
 package com.mxmovies.movie.service;
 
+import com.mxmovies.common.exception.ResourceNotFoundException;
 import com.mxmovies.movie.dto.request.MovieRequest;
 import com.mxmovies.movie.dto.response.MovieResponse;
 import com.mxmovies.movie.model.Movie;
@@ -37,7 +38,7 @@ public class MovieService {
     public MovieResponse getMovieById(UUID id) {
         return movieRepository.findById(id)
                 .map(this::mapToResponse)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found"));
     }
 
     public List<MovieResponse> getAllMovies() {
@@ -70,7 +71,7 @@ public class MovieService {
 
     public MovieResponse updateMovie(UUID id, MovieRequest request) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found"));
 
         Movie updated = Movie.builder()
                 .id(movie.getId())
@@ -90,7 +91,7 @@ public class MovieService {
 
     public void deleteMovie(UUID id) {
         if (!movieRepository.existsById(id)) {
-            throw new RuntimeException("Movie not found");
+            throw new ResourceNotFoundException("Movie not found");
         }
         movieRepository.deleteById(id);
     }

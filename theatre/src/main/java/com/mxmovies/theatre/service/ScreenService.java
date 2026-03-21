@@ -1,6 +1,9 @@
 package com.mxmovies.theatre.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mxmovies.common.exception.BadRequestException;
+import com.mxmovies.common.exception.ConflictException;
+import com.mxmovies.common.exception.ResourceNotFoundException;
 import com.mxmovies.theatre.dto.request.ScreenRequest;
 import com.mxmovies.theatre.dto.response.ScreenResponse;
 import com.mxmovies.theatre.dto.response.SeatResponse;
@@ -38,7 +41,7 @@ public class ScreenService {
 
     public ScreenResponse createScreen(UUID theatreId, ScreenRequest request){
         Theatre theatre = theatreRepository.findById(theatreId)
-                .orElseThrow(()->new RuntimeException("Theatre not found"));
+                .orElseThrow(()->new ResourceNotFoundException("Theatre not found"));
 
         Screen screen = Screen.builder()
                 .theatre(theatre)
@@ -54,7 +57,7 @@ public class ScreenService {
 
     public List<ScreenResponse> getScreensByTheatre(UUID theatreId) {
         if (!theatreRepository.existsById(theatreId)) {
-            throw new RuntimeException("Theatre not found");
+            throw new ResourceNotFoundException("Theatre not found");
         }
         return screenRepository.findByTheatreId(theatreId)
                 .stream()
@@ -64,14 +67,14 @@ public class ScreenService {
 
     public ScreenResponse getScreenById(UUID screenId) {
         Screen screen = screenRepository.findById(screenId)
-                .orElseThrow(() -> new RuntimeException("Screen not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
         return mapToResponse(screen);
     }
 
 
     public List<SeatResponse> getSeatsByScreen(UUID screenId) {
         if (!screenRepository.existsById(screenId)) {
-            throw new RuntimeException("Screen not found");
+            throw new ResourceNotFoundException("Screen not found");
         }
         return seatRepository
                 .findByScreenIdOrderByRowLabelAscColumnNumberAsc(screenId)
@@ -82,11 +85,11 @@ public class ScreenService {
 
     public void uploadSeatLayout(UUID theatreId, UUID screenId, MultipartFile file){
         Screen screen = screenRepository.findById(screenId)
-                .orElseThrow(()-> new RuntimeException("Screen not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Screen not found"));
 
         // validate screen actually belongs to the given theatre
         if (!screen.getTheatre().getId().equals(theatreId)) {
-            throw new RuntimeException("Screen does not belong to this theatre");
+            throw new ConflictException("Screen does not belong to this theatre");
         }
 
         try{
@@ -121,14 +124,14 @@ public class ScreenService {
             seatRepository.saveAll(seats);
 
         }catch (IOException e) {
-            throw new RuntimeException("Failed to parse layout file: " + e.getMessage());
+            throw new BadRequestException("Failed to parse layout file: " + e.getMessage());
         }
     }
 
     // get layout from MongoDB for UI rendering
     public SeatLayoutDocument getSeatLayout(UUID screenId) {
         return seatLayoutRepository.findByScreenId(screenId.toString())
-                .orElseThrow(() -> new RuntimeException("Seat layout not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Seat layout not found"));
     }
 
     private ScreenResponse mapToResponse(Screen screen) {

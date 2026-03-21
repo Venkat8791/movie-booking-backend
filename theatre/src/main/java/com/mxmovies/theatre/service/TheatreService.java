@@ -1,5 +1,6 @@
 package com.mxmovies.theatre.service;
 
+import com.mxmovies.common.exception.ResourceNotFoundException;
 import com.mxmovies.theatre.dto.request.TheatreRequest;
 import com.mxmovies.theatre.dto.response.TheatreResponse;
 import com.mxmovies.theatre.model.Theatre;
@@ -40,7 +41,7 @@ public class TheatreService {
 
     public TheatreResponse getTheatreById(UUID id) {
         Theatre theatre = theatreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Theatre not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Theatre not found"));
         return mapToResponse(theatre);
     }
 

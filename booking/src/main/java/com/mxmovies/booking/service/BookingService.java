@@ -8,6 +8,10 @@ import com.mxmovies.booking.model.Booking;
 import com.mxmovies.booking.model.BookingStatus;
 import com.mxmovies.booking.model.PaymentStatus;
 import com.mxmovies.booking.repository.BookingRepository;
+import com.mxmovies.common.exception.BadRequestException;
+import com.mxmovies.common.exception.ConflictException;
+import com.mxmovies.common.exception.ResourceNotFoundException;
+import com.mxmovies.common.exception.UnauthorizedException;
 import com.mxmovies.show.model.Show;
 import com.mxmovies.show.model.ShowSeat;
 import com.mxmovies.show.model.ShowSeatStatus;
@@ -55,23 +59,23 @@ public class BookingService {
 
         //validate show exists and is active
         Show show = showRepository.findById(request.getShowId())
-                .orElseThrow(()-> new RuntimeException("Show not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Show not found"));
 
         if(!show.getStatus().name().equals("ACTIVE")){
-            throw new RuntimeException("Show is not active");
+            throw new ConflictException("Show is not active");
         }
 
         //validate all seats belongs to this shows's screen
         List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
 
         if(seats.size()!=request.getSeatIds().size()){
-            throw new RuntimeException("One or more seats not found");
+            throw new ResourceNotFoundException("One or more seats not found");
         }
 
         //validate all seats belong to the shows's screen
         seats.forEach(seat -> {
             if(!seat.getScreen().getId().equals(show.getScreenId())){
-                throw new RuntimeException(
+                throw new ConflictException(
                         "Seat " + seat.getId() + " does not belong to this show's screen"
                 );
             }
@@ -80,7 +84,7 @@ public class BookingService {
         //fetch layout to get section base prices
         SeatLayoutDocument layout = seatLayoutRepository
                 .findByScreenId(show.getScreenId().toString())
-                .orElseThrow(() -> new RuntimeException("Seat layout not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Seat layout not found"));
 
         //build row -> section base price map
         Map<String, BigDecimal> rowBasePriceMap = new HashMap<>();
@@ -139,7 +143,7 @@ public class BookingService {
         }catch (DataIntegrityViolationException e){
             // one or more seats already taken
             // transaction will rollback automatically
-            throw new RuntimeException(
+            throw new DataIntegrityViolationException(
                     "One or more selected seats are no longer available"
             );
         }
@@ -152,21 +156,21 @@ public class BookingService {
     @Transactional
     public BookingResponse confirmPayment(UUID bookingId, PaymentRequest request, UUID userId){
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         //validate booking belongs to user
         if(!booking.getUserId().equals(userId)){
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException("Unauthorized");
         }
 
         //validate booking is still pending
         if(!booking.getStatus().equals(BookingStatus.PENDING)){
-            throw new RuntimeException("Booking is no longer pending");
+            throw new BadRequestException("Booking is no longer pending");
         }
 
         //validate booking not expired
         if (LocalDateTime.now().isAfter(booking.getExpiresAt())) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Booking has expired — please select seats again"
             );
         }
@@ -191,11 +195,11 @@ public class BookingService {
         List<Seat> seats = seatRepository.findAllById(seatIds);
 
         Show show = showRepository.findById(booking.getShowId())
-                .orElseThrow(()-> new RuntimeException("show not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("show not found"));
 
         SeatLayoutDocument layout = seatLayoutRepository
                 .findByScreenId(show.getScreenId().toString())
-                .orElseThrow(() -> new RuntimeException("Layout not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Layout not found"));
 
         Map<String, BigDecimal> rowBasePriceMap = new HashMap<>();
 
@@ -211,14 +215,14 @@ public class BookingService {
     @Transactional
     public void cancelBooking(UUID bookingId, UUID userId){
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         if (!booking.getUserId().equals(userId)) {
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException("Unauthorized");
         }
 
         if (booking.getStatus() == BookingStatus.CANCELLED) {
-            throw new RuntimeException("Booking already cancelled");
+            throw new ConflictException("Booking already cancelled");
         }
 
         // release seats
@@ -242,11 +246,11 @@ public class BookingService {
                     List<Seat> seats = seatRepository.findAllById(seatIds);
 
                     Show show = showRepository.findById(booking.getShowId())
-                            .orElseThrow(() -> new RuntimeException("Show not found"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Show not found"));
 
                     var layout = seatLayoutRepository
                             .findByScreenId(show.getScreenId().toString())
-                            .orElseThrow(() -> new RuntimeException("Layout not found"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Layout not found"));
 
                     Map<String, BigDecimal> rowBasePriceMap = new HashMap<>();
                     layout.getSections().forEach(section ->
@@ -266,10 +270,10 @@ public class BookingService {
 
     public BookingResponse getBookingById(UUID bookingId, UUID userId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         if (!booking.getUserId().equals(userId)) {
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedException("Unauthorized");
         }
 
         List<ShowSeat> showSeats = showSeatRepository
@@ -280,11 +284,11 @@ public class BookingService {
         List<Seat> seats = seatRepository.findAllById(seatIds);
 
         Show show = showRepository.findById(booking.getShowId())
-                .orElseThrow(() -> new RuntimeException("Show not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Show not found"));
 
         var layout = seatLayoutRepository
                 .findByScreenId(show.getScreenId().toString())
-                .orElseThrow(() -> new RuntimeException("Layout not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Layout not found"));
 
         Map<String, BigDecimal> rowBasePriceMap = new HashMap<>();
         layout.getSections().forEach(section ->

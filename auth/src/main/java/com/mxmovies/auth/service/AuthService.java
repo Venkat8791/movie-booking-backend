@@ -7,6 +7,9 @@ import com.mxmovies.auth.model.Role;
 import com.mxmovies.auth.model.User;
 import com.mxmovies.auth.repository.UserRepository;
 
+import com.mxmovies.common.exception.BadRequestException;
+import com.mxmovies.common.exception.ConflictException;
+import com.mxmovies.common.exception.ResourceNotFoundException;
 import com.mxmovies.common.security.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,11 +34,11 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request){
         // ✅ confirm password check
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Passwords do not match");
+            throw new BadRequestException("Passwords do not match");
         }
 
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
         User user = User.builder()
                 .name(request.getName())
@@ -60,7 +63,7 @@ public class AuthService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new RuntimeException("User not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getId());
         return AuthResponse.builder()
