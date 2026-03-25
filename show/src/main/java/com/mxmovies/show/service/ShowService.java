@@ -7,6 +7,7 @@ import com.mxmovies.movie.repository.MovieRepository;
 import com.mxmovies.show.dto.request.ShowRequest;
 import com.mxmovies.show.dto.response.SeatAvailabilityResponse;
 import com.mxmovies.show.dto.response.ShowResponse;
+import com.mxmovies.show.dto.response.ShowsByTheatreResponse;
 import com.mxmovies.show.model.Show;
 import com.mxmovies.show.model.ShowSeat;
 import com.mxmovies.show.model.ShowStatus;
@@ -14,6 +15,7 @@ import com.mxmovies.show.repository.ShowRepository;
 import com.mxmovies.show.repository.ShowSeatRepository;
 import com.mxmovies.theatre.model.Screen;
 import com.mxmovies.theatre.model.Seat;
+import com.mxmovies.theatre.model.Theatre;
 import com.mxmovies.theatre.model.mongo.SeatLayoutDocument;
 import com.mxmovies.theatre.repository.ScreenRepository;
 import com.mxmovies.theatre.repository.SeatLayoutRepository;
@@ -21,7 +23,9 @@ import com.mxmovies.theatre.repository.SeatRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -227,6 +231,84 @@ public class ShowService {
                 .createdAt(show.getCreatedAt())
                 .build();
         showRepository.save(show);
+    }
+
+    public List<ShowsByTheatreResponse> getShowsGroupedByTheatre(UUID movieId, String city, LocalDate date){
+        LocalDateTime startOfDay = date.atStartOfDay();
+
+        List<Show> shows = showRepository.findByMovieAndCityAndDate(movieId, city, startOfDay);
+
+        if(shows.isEmpty()){
+            return List.of();
+        }
+
+        //get all unique screenIds from shows
+        List<UUID> screenIds = shows.stream()
+                .map(Show:: getScreenId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // fetch all screens
+        List<Screen> screens = screenRepository.findAllById(screenIds);
+
+        // build screenId → screen map
+        Map<UUID, Screen> screenMap = screens.stream()
+                .collect(Collectors.toMap(Screen::getId, s -> s));
+
+        // group shows by theatreId
+        Map<UUID, List<Show>> showsByTheatre = shows.stream()
+                .collect(Collectors.groupingBy(show ->
+                        screenMap.get(show.getScreenId()).getTheatre().getId()
+                ));
+
+        // build response
+        return showsByTheatre.entrySet().stream()
+                .map(entry -> {
+                    UUID theatreId = entry.getKey();
+                    List<Show> theatreShows = entry.getValue();
+
+                    // get theatre from first screen
+                    Screen firstScreen = screenMap.get(
+                            theatreShows.get(0).getScreenId()
+                    );
+                    Theatre theatre = firstScreen.getTheatre();
+
+                    // group shows by screenId
+                    Map<UUID, List<Show>> showsByScreen = theatreShows.stream()
+                            .collect(Collectors.groupingBy(Show::getScreenId));
+
+                    List<ShowsByTheatreResponse.ScreenShows> screenShows =
+                            showsByScreen.entrySet().stream()
+                                    .map(screenEntry -> {
+                                        Screen screen = screenMap.get(screenEntry.getKey());
+                                        List<ShowsByTheatreResponse.ShowSummary> summaries =
+                                                screenEntry.getValue().stream()
+                                                        .map(show -> ShowsByTheatreResponse.ShowSummary.builder()
+                                                                .showId(show.getId())
+                                                                .showTime(show.getShowTime()
+                                                                        .format(DateTimeFormatter.ofPattern("hh:mm a")))
+                                                                .priceMultiplier(show.getPriceMultiplier().doubleValue())
+                                                                .status(show.getStatus().name())
+                                                                .build())
+                                                        .collect(Collectors.toList());
+
+                                        return ShowsByTheatreResponse.ScreenShows.builder()
+                                                .screenId(screen.getId())
+                                                .screenName(screen.getName())
+                                                .screenType(screen.getScreenType())
+                                                .shows(summaries)
+                                                .build();
+                                    })
+                                    .collect(Collectors.toList());
+
+                    return ShowsByTheatreResponse.builder()
+                            .theatreId(theatreId)
+                            .theatreName(theatre.getName())
+                            .theatreAddress(theatre.getAddress())
+                            .screens(screenShows)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
 

@@ -5,11 +5,13 @@ import com.mxmovies.show.dto.response.SeatAvailabilityResponse;
 import com.mxmovies.show.dto.response.ShowResponse;
 import com.mxmovies.show.service.ShowService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,11 +40,11 @@ public class ShowController {
         return ResponseEntity.ok(showService.getShowById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ShowResponse>> getShowsByMovie(
-            @RequestParam UUID movieId) {
-        return ResponseEntity.ok(showService.getShowsByMovie(movieId));
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ShowResponse>> getShowsByMovie(
+//            @RequestParam UUID movieId) {
+//        return ResponseEntity.ok(showService.getShowsByMovie(movieId));
+//    }
 
 
     @GetMapping("/screen/{screenId}")
@@ -64,8 +66,26 @@ public class ShowController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<?> getShows(
+            @RequestParam(required = false) UUID movieId,
+            @RequestParam(required = false) UUID screenId,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-
-
+        if (movieId != null && city != null) {
+            LocalDate selectedDate = date != null ? date : LocalDate.now();
+            return ResponseEntity.ok(
+                    showService.getShowsGroupedByTheatre(movieId, city, selectedDate)
+            );
+        }
+        if (movieId != null) {
+            return ResponseEntity.ok(showService.getShowsByMovie(movieId));
+        }
+        if (screenId != null) {
+            return ResponseEntity.ok(showService.getShowsByScreen(screenId));
+        }
+        return ResponseEntity.ok(List.of());
+    }
 
 }
