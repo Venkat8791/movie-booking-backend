@@ -31,10 +31,10 @@ public class MovieController {
                 .body(movieService.createMovie(request));
     }
 
-    @GetMapping
-    public ResponseEntity<List<MovieResponse>> getAllMovies() {
-        return ResponseEntity.ok(movieService.getAllMovies());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<MovieResponse>> getAllMovies() {
+//        return ResponseEntity.ok(movieService.getAllMovies());
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<MovieResponse> getMovieById(@PathVariable UUID id) {
@@ -72,5 +72,27 @@ public class MovieController {
     public ResponseEntity<Void> deleteMovie(@PathVariable UUID id) {
         movieService.deleteMovie(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MovieResponse>> getMovies(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) String genre) {
+
+        if (city != null) {
+            return ResponseEntity.ok(movieService.getMoviesPlayingInCity(city));
+        }
+        if (title != null) {
+            return ResponseEntity.ok(movieService.searchByTitle(title));
+        }
+        if (language != null) {
+            return ResponseEntity.ok(movieService.getByLanguage(language));
+        }
+        if (genre != null) {
+            return ResponseEntity.ok(movieService.getByGenre(genre));
+        }
+        return ResponseEntity.ok(movieService.getAllMovies());
     }
 }

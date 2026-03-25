@@ -7,6 +7,7 @@ import com.mxmovies.movie.model.Movie;
 import com.mxmovies.movie.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,6 +44,14 @@ public class MovieService {
 
     public List<MovieResponse> getAllMovies() {
         return movieRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<MovieResponse> getMoviesPlayingInCity(String city) {
+        return movieRepository
+                .findMoviesPlayingInCity(city, LocalDateTime.now())
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
