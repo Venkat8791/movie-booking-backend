@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -109,18 +110,28 @@ public class ScreenService {
 
             seatLayoutRepository.save(document);
 
-            List<Seat> seats = document.getSections().stream()
-                    .flatMap(section -> section.getRows().stream()
-                            .flatMap(row -> row.getSeats().stream()
-                                    .filter(s->!s.getIsGap() && !s.getIsBlocked())
-                                    .map(s->Seat.builder()
-                                            .screen(screen)
-                                            .rowLabel(row.getLabel())
-                                            .columnNumber(s.getColumnNumber())
-                                            .seatType(SeatType.valueOf(section.getSeatType()))
-                                            .build())))
-                    .collect(Collectors.toList());
+            List<Seat> seats = new ArrayList<>();
 
+            for (SeatLayoutDocument.Section section : document.getSections()) {
+                for (SeatLayoutDocument.Row row : section.getRows()) {
+                    int seatNumber = 1;  // ← reset for each row
+
+                    for (SeatLayoutDocument.SeatInfo seatInfo : row.getSeats()) {
+                        if (seatInfo.getIsGap() || seatInfo.getIsBlocked()) continue;
+
+                        Seat seat = Seat.builder()
+                                .screen(screen)
+                                .rowLabel(row.getLabel())
+                                .columnNumber(seatInfo.getColumnNumber())
+                                .seatLabel(row.getLabel() + seatNumber)  // ← A1, A2, A3...
+                                .seatType(SeatType.valueOf(section.getSeatType()))
+                                .build();
+
+                        seats.add(seat);
+                        seatNumber++;
+                    }
+                }
+            }
             seatRepository.saveAll(seats);
 
         }catch (IOException e) {
@@ -149,8 +160,7 @@ public class ScreenService {
         return SeatResponse.builder()
                 .id(seat.getId())
                 .screenId(seat.getScreen().getId())
-                .rowLabel(seat.getRowLabel())
-                .columnNumber(seat.getColumnNumber())
+                .seatLabel(seat.getSeatLabel())
                 .seatType(seat.getSeatType().name())
                 .build();
     }

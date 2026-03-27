@@ -38,6 +38,9 @@ public class Seat {
     @Column(name = "column_number", nullable = false)
     private Integer columnNumber;
 
+    @Column(name = "seat_label", nullable = false)
+    private String seatLabel;  // "A1", "A2", "A3" etc
+
     @Column(name = "seat_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private SeatType seatType;

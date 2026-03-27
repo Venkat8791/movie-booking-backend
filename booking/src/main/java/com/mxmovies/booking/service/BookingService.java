@@ -335,8 +335,7 @@ public class BookingService {
 
                     return BookedSeatResponse.builder()
                             .seatId(seat.getId())
-                            .rowLabel(seat.getRowLabel())
-                            .columnNumber(seat.getColumnNumber())
+                            .seatLabel(seat.getSeatLabel())
                             .seatType(seat.getSeatType().name())
                             .price(price)
                             .build();

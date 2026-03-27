@@ -11,8 +11,7 @@ import java.util.UUID;
 public class SeatResponse {
     private final UUID id;
     private final UUID screenId;
-    private final String rowLabel;
-    private final Integer columnNumber;
+    private final String seatLabel;
     private final String seatType;
     private final BigDecimal priceMultiplier;
 }

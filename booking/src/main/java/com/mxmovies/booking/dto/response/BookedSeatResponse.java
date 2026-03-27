@@ -10,8 +10,7 @@ import java.util.UUID;
 @Builder
 public class BookedSeatResponse {
     private final UUID seatId;
-    private final String rowLabel;
-    private final Integer columnNumber;
+    private final String seatLabel;
     private final String seatType;
     private final BigDecimal price;
 }

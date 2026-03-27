@@ -36,6 +36,7 @@ public class SeatAvailabilityResponse {
     public static class SeatAvailability {
         private final UUID seatId;      // null if gap
         private final Integer columnNumber;
+        private final String seatLabel;
         private final boolean isGap;
         private final boolean isBlocked;
         private final String status;               // AVAILABLE, PENDING, BOOKED
